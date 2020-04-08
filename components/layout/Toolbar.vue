@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar extended fixed app>
+  <v-app-bar extended app>
     <v-toolbar-title>
       JavaScript Challenge
     </v-toolbar-title>
