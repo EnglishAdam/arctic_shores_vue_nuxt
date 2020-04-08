@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar extended app>
+  <v-app-bar color="blue darken-3" extended dark app>
     <v-toolbar-title>
       JavaScript Challenge
     </v-toolbar-title>

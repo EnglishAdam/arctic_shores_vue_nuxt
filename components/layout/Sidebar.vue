@@ -15,7 +15,7 @@ export default {
       // Navigation items
       items: [
         {
-          title: 'Search',
+          title: 'Weather Search',
           icon: 'search',
           to: 'search'
         },
