@@ -1,4 +1,4 @@
-# arctic_shores_vue_nuxt
+# Arctic Shores Vue (Via Nuxt)
 
 > Arctic Shores JavaScript Challenge
 
