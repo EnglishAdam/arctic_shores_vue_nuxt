@@ -15,7 +15,7 @@ class Search {
 
 export const state = () => ({
   // Constants
-  ACCEPTED_TEMP_TYPES: ['celcius', 'farenheit'], // List of accepted temperature types
+  ACCEPTED_TEMP_TYPES: ['kelvins', 'celcius', 'farenheit'], // List of accepted temperature types
 
   // Data Collection
   searches: {}, // Dictionary of Search instances, keyed by 'id' of search object
