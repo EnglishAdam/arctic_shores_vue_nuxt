@@ -26,7 +26,7 @@ export default {
   filters: {
     /**
      * Temperature filter takes both the supplied temperature (Kelvin)
-     * Returns sppied temperature unity type
+     * Returns sppied temperature unit type
      * @param {*} value
      * @param {number} value.temp Temperature in kelvin
      * @param {string} value.type Temperature unit type
@@ -55,7 +55,9 @@ export default {
   data() {
     return {
       app: null, // Container for pixi application
-      tickCount: 0, // Counts tick, used to check if scene change (tick resets to 0)
+      tickCount: 0, // Counts tick, used to check if scene change (i.e. tickCount === 0 as tickCount is reset to 0)
+
+      // Image containers
       cloud: null,
       rain: null,
       rays: null,
@@ -65,14 +67,26 @@ export default {
   },
 
   computed: {
+    /**
+     * Returns the name of the searched city or null
+     * @returns {string|null} City name
+     */
     getCityName() {
       return (this.search && this.search.cityName) || null
     },
 
+    /**
+     * Returns the temperature unit type
+     * @returns {string|null} Temperature unit type
+     */
     getTempType() {
       return (this.search && this.search.tempType) || null
     },
 
+    /**
+     * Returns the successful response retrieved via the API if avaialable
+     * @returns {*|null} Reponse
+     */
     getResponse() {
       // Get response and check for status
       const response = (this.search && this.search.response) || null
@@ -81,26 +95,40 @@ export default {
       return response
     },
 
+    /**
+     * Returns the weather description of the successful response
+     * @returns {string|null} Reponse
+     */
     getDescription() {
-      // Get response and check for status
       const response = this.getResponse
       const weather = (response && response.data && response.data.weather && response.data.weather[0]) || null
       return (weather && weather.description) || null
     },
 
+    /**
+     * Returns the weather 'main' keyword of the successful response
+     * This keyword is used to work out what weather animation to show
+     * @returns {string|null} Reponse
+     */
     getMain() {
-      // Get response and check for status
       const response = this.getResponse
       const weather = (response && response.data && response.data.weather && response.data.weather[0]) || null
       return (weather && weather.main) || null
     },
 
+    /**
+     * Returns the weather temparature of the successful response
+     * @returns {string|null} Reponse
+     */
     getTemp() {
-      // Get response and check for status
       const response = this.getResponse
       return (response && response.data && response.data.main && response.data.main.temp) || null
     },
 
+    /**
+     * Returns the filter object used to get the temperature type in the filter method
+     * @returns {*} { temp, type }
+     */
     getTempWithType() {
       return {
         temp: this.getTemp,
@@ -110,6 +138,10 @@ export default {
   },
 
   watch: {
+    /**
+     * Triggered when the description changes
+     * @param {string} value The new value
+     */
     getDescription(value) {
       // Reset tickcount
       this.tickCount = 0
@@ -120,15 +152,8 @@ export default {
   },
 
   mounted() {
-    console.log('@@@@ mounted')
-    // Attach pixi instance
-    this.app = new PIXI.Application({
-      width: 256, // default: 800
-      height: 256, // default: 600
-      antialias: true, // default: false
-      transparent: false, // default: false
-      resolution: 1 // default: 1
-    })
+    // Create and attach the default application to the component
+    this.app = new PIXI.Application()
     const div = document.getElementById('pixi-app')
     div.appendChild(this.app.view)
 
@@ -140,7 +165,7 @@ export default {
     this.app.renderer.autoResize = true
     this.app.renderer.resize(div.clientWidth, div.clientHeight)
 
-    // Add texture
+    // Add textures
     const loader = new PIXI.Loader()
     loader
       .add('cloud', './images/cloud.png')
@@ -149,29 +174,32 @@ export default {
       .add('sun', './images/sun.png')
       .add('wind', './images/wind.png')
       .load((loader, resources) => {
-        // Create resources
+        // Create resources and record with coponent
         this.cloud = new PIXI.Sprite(resources.cloud.texture)
         this.rain = new PIXI.TilingSprite(resources.rain.texture)
         this.rays = new PIXI.Sprite(resources.rays.texture)
         this.sun = new PIXI.Sprite(resources.sun.texture)
         this.wind = new PIXI.TilingSprite(resources.wind.texture)
 
-        // Create stages
+        // Add sprites to the stage container
         this.app.stage.addChild(this.cloud)
         this.app.stage.addChild(this.rain)
         this.app.stage.addChild(this.rays)
         this.app.stage.addChild(this.sun)
         this.app.stage.addChild(this.wind)
 
-        // Hide all sprites to start with
+        // Hide all sprites to start
         this.hideAll()
 
-        // Set tick
+        // Set ticker
         this.app.ticker.add((delta) => this.ticker(this.app, delta))
       })
   },
 
   methods: {
+    /**
+     * Called when the pixi container is resized via the v-resize directive
+     */
     onResize() {
       // Check app exists, as this is called during the mounting process
       // See v-resize directive in html component
@@ -193,6 +221,9 @@ export default {
       }
     },
 
+    /**
+     * Sets all sprites as hidden
+     */
     hideAll() {
       if (this.cloud) this.cloud.visible = false
       if (this.rain) this.rain.visible = false
@@ -201,6 +232,10 @@ export default {
       if (this.wind) this.wind.visible = false
     },
 
+    /**
+     * Triggers relevant ticker related to the weather
+     * Used to split up animations into 'scenes'
+     */
     ticker(app, delta) {
       // Call relevent Tick
       switch (this.getMain) {
@@ -235,8 +270,13 @@ export default {
       this.tickCount += 1
     },
 
+    /**
+     * Animation ticker for cloudy weather
+     * @param {*} app Pixi Application
+     * @param {number} delta Render frame change delta
+     */
     cloudTicker(app, delta) {
-      // Setup
+      // SETUP
       if (this.tickCount === 0) {
         // Set background
         // eslint-disable-next-line prettier/prettier
@@ -252,7 +292,7 @@ export default {
         this.cloud.visible = true
       }
 
-      // Animate cloud
+      // ANIMATE
       // Move cloud left
       this.cloud.x += delta * -5
 
@@ -262,8 +302,13 @@ export default {
       }
     },
 
+    /**
+     * Animation ticker for rainy weather
+     * @param {*} app Pixi Application
+     * @param {number} delta Render frame change delta
+     */
     rainTicker(app, delta) {
-      // Setup
+      // SETUP
       if (this.tickCount === 0) {
         // Set background
         // eslint-disable-next-line prettier/prettier
@@ -279,17 +324,22 @@ export default {
         this.rain.visible = true
       }
 
-      // Animate
+      // ANIMATE
       this.rain.y += delta * 5
 
-      // When cloud heads off left screen, position to right
+      // Reset rain tile when has moved it's height
       if (this.rain.y >= 0) {
         this.rain.y = this.rain.y = -256
       }
     },
 
+    /**
+     * Animation ticker for sunny weather
+     * @param {*} app Pixi Application
+     * @param {number} delta Render frame change delta
+     */
     sunTicker(app, delta) {
-      // Setup
+      // SETUP
       if (this.tickCount === 0) {
         // Set background
         // eslint-disable-next-line prettier/prettier
@@ -314,12 +364,18 @@ export default {
         this.rays.visible = true
       }
 
-      // Animate
+      // ANIMATE
+      // Rotat sun rays
       this.rays.rotation += 0.01
     },
 
+    /**
+     * Animation ticker for windy weather
+     * @param {*} app Pixi Application
+     * @param {number} delta Render frame change delta
+     */
     windTicker(app, delta) {
-      // Setup
+      // SETUP
       if (this.tickCount === 0) {
         // Set background
         // eslint-disable-next-line prettier/prettier
@@ -335,16 +391,22 @@ export default {
         this.wind.visible = true
       }
 
-      // Animate
+      // ANIMATE
       this.wind.x += delta * -5
 
-      // When cloud heads off left screen, position to right
+      // Reset wind when it has moved it's width
       if (this.wind.x <= -256) {
         this.wind.x = this.wind.x = 0
       }
     },
 
+    /**
+     * Animation ticker for no weather
+     * @param {*} app Pixi Application
+     * @param {number} delta Render frame change delta
+     */
     emptyTicker(app, delta) {
+      // Set to new background
       app.renderer.backgroundColor = 0x061639
     }
   }

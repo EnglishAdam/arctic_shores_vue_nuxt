@@ -8,7 +8,7 @@
             v-model="cityName"
             type="text"
             label="City name"
-            :rules="[(v) => !!v || 'Item is required']"
+            :rules="[(v) => !!v || 'City name is required']"
             outlined
           />
           <!-- City Name Input -->
@@ -17,12 +17,13 @@
             v-model="tempType"
             :items="getAcceptedTempTypes"
             label="Temperature Units"
-            :rules="[(v) => !!v || 'Item is required']"
+            :rules="[(v) => !!v || 'Unit is required']"
             outlined
           />
           <!-- City Name Input -->
 
           <v-btn :loading="isRequesting" :disabled="disabled" @click="search">Search</v-btn>
+          <!-- Submit Button -->
         </v-form>
       </v-col>
     </v-row>
@@ -34,9 +35,9 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   data() {
     return {
-      isRequesting: false,
-      cityName: '',
-      tempType: ''
+      isRequesting: false, // Flag indicating if a request is being made
+      cityName: '', // Form cityName input container
+      tempType: '' // Form temperature unity type select container
     }
   },
 
@@ -46,6 +47,10 @@ export default {
       getAcceptedTempTypes: 'weather/getAcceptedTempTypes'
     }),
 
+    /**
+     * Returns true if cityName and tempType are incorrect values
+     * @returns {Boolean}
+     */
     disabled() {
       return this.cityName == null || this.cityName.trim() === '' || this.tempType == null || this.tempType === ''
     }
@@ -56,6 +61,9 @@ export default {
       fetchWeather: 'weather/fetchWeather'
     }),
 
+    /**
+     * Sets the requesting flag, and makes request to server for weather data for the city name provided
+     */
     async search() {
       // Check values
       if (this.cityName == null || this.cityName.trim() === '') return

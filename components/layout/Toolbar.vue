@@ -3,10 +3,12 @@
     <v-toolbar-title>
       JavaScript Challenge
     </v-toolbar-title>
+    <!-- Application title -->
 
     <template #extension>
       <sidebar />
     </template>
+    <!-- Extension template slot -->
   </v-app-bar>
 </template>
 

@@ -5,11 +5,11 @@ import { v4 as uuidv4 } from 'uuid'
  */
 class Search {
   constructor(id, cityName, tempType) {
-    this.id = id
-    this.cityName = cityName
-    this.tempType = tempType
-    this.date = Date.now()
-    this.response = null
+    this.id = id // Unique id supplied to instance
+    this.cityName = cityName // Name of city user searched for
+    this.tempType = tempType // Temperature unity type required
+    this.date = Date.now() // Date of search
+    this.response = null // Response from server
   }
 }
 
@@ -28,7 +28,7 @@ export const state = () => ({
 
 export const getters = {
   /**
-   * Gets a list of the last 5 searches
+   * Gets a list of the last 5 searches ids
    * @returns {[string]} ids
    */
   getSearchIds: (state, getters) => {
@@ -150,6 +150,12 @@ export const mutations = {
     state.searches = Object.assign({}, state.searches, { [id]: search }) // Use assign to trigger reactivity in Vue
   },
 
+  /**
+   * Removes search from collection by it's id, used for cases or error
+   * @param {*} state
+   * @param {*} payload
+   * @param {string} payload.id Id Id to remove
+   */
   removeSearch(state, payload) {
     // Check payload
     const { id } = payload
@@ -173,6 +179,12 @@ export const mutations = {
     }
   },
 
+  /**
+   * Records the last id search for by the user, this is used to find the last searched search Instance
+   * @param {*} state
+   * @param {*} payload
+   * @param {string} payload.id Id Id to remove
+   */
   setLastSearchId(state, payload) {
     // Check payload
     const { id } = payload
@@ -184,6 +196,12 @@ export const mutations = {
     state.lastSearchId = id
   },
 
+  /**
+   * Records the last id selected by the user, this is used to find the last selected search Instance
+   * @param {*} state
+   * @param {*} payload
+   * @param {string} payload.id Id Id to remove
+   */
   setSelectedId(state, payload) {
     // Check payload
     const { id } = payload
@@ -195,6 +213,10 @@ export const mutations = {
     state.lastSelectedId = id
   },
 
+  /**
+   * Removes the last selected id, this will removed the last selected instance
+   * @param {*} state
+   */
   resetSelection(state) {
     // Set value in state
     state.lastSelectedId = null
@@ -202,7 +224,19 @@ export const mutations = {
 }
 
 export const actions = {
-  async fetchWeather({ getters, commit }, payload) {
+  /**
+   * Makes a request to the server for the weather of the supplied city name.
+   * This records the search and the response. It removes the request if there is an error.
+   * This sets the last search instance id.
+   * This returns a flag, true if the request is successful
+   * @param {*} ctx
+   * @param {function} ctx.commit
+   * @param {*} payload
+   * @param {string} payload.cityName City name
+   * @param {string} payload.tempType Temperature unity type
+   * @returns {boolean} Success
+   */
+  async fetchWeather({ commit }, payload) {
     // Check payload
     const { cityName, tempType } = payload
     if (cityName == null) return false
@@ -230,6 +264,13 @@ export const actions = {
     }
   },
 
+  /**
+   * Registeres an instance id as being selected.
+   * @param {*} ctx
+   * @param {function} ctx.commit
+   * @param {*} payload
+   * @param {string} payload.id
+   */
   selectId({ commit }, payload) {
     // Check payload
     const { id } = payload
@@ -239,6 +280,11 @@ export const actions = {
     commit('setSelectedId', { id })
   },
 
+  /**
+   * Unregisters/Resets all instance ids as being selected
+   * @param {*} ctx
+   * @param {function} ctx.commit
+   */
   resetSelection({ commit }) {
     commit('resetSelection')
   }

@@ -3,25 +3,26 @@ const { Router } = require('express')
 const router = Router()
 const log = require('../../services/log')
 
-// Nuxt doesn't load .env file
+// Nuxt doesn't load .env file into the server environment
+// Therefore use dotenv to request the variables
 require('dotenv').config()
 
-/* GET user by ID. */
+/**
+ * Requests weather of a city by it's name
+ */
 router.get('/weather/:cityName', async function(req, res, next) {
   // Get required properties
   const { cityName } = req.params
   const { API_KEY } = process.env
 
   // Log request using chronological id
-  const logId = Date.now()
+  const logId = Date.now() // Id used to add response later
   const logObject = {
     request: {
       cityName,
       date: Date.now()
     }
   }
-
-  // Log to id
   log(logId, logObject)
 
   // Attempt to fetch weather data

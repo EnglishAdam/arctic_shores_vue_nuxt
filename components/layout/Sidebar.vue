@@ -6,22 +6,23 @@
       </v-btn>
     </v-col>
   </v-row>
+  <!-- Navigation Row -->
 </template>
 
 <script>
 export default {
   data() {
     return {
-      // Navigation items
+      /**
+       * Items used for route navigation
+       */
       items: [
         {
           title: 'Weather Search',
-          icon: 'search',
           to: 'search'
         },
         {
           title: 'History',
-          icon: 'history',
           to: 'history'
         }
       ]

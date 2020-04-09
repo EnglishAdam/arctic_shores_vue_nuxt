@@ -10,6 +10,9 @@
       Home page
     </NuxtLink>
   </v-app>
+  <!-- 
+    Default Generated Error Page
+   -->
 </template>
 
 <script>
